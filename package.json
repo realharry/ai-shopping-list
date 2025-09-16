@@ -1,11 +1,14 @@
 {
   "name": "ai-shopping-list",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run copy-manifest",
+    "build:extension": "npm run build && npm run zip",
+    "copy-manifest": "cp public/manifest.json dist/ && cp -r public/icons dist/",
+    "zip": "cd dist && zip -r ../ai-shopping-list-extension.zip .",
     "lint": "eslint .",
     "preview": "vite preview"
   },
