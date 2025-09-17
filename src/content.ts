@@ -1,8 +1,48 @@
-import type { ProductScrapingResult } from './types';
-import { StorageManager } from './utils/storage';
-
-// Initialize content script
+// AI Shopping List Content Script
 console.log('AI Shopping List content script loaded');
+
+// Inline storage utilities to avoid import issues
+const STORAGE_KEYS = {
+  SHOPPING_LIST: 'shoppingList',
+  SETTINGS: 'settings',
+} as const;
+
+interface ExtensionSettings {
+  llmConfig: {
+    provider: 'chrome-ai' | 'openai' | 'anthropic' | 'custom';
+    apiUrl?: string;
+    apiKey?: string;
+    model?: string;
+  };
+  autoScrapeEnabled: boolean;
+}
+
+interface ProductScrapingResult {
+  productName: string;
+  price?: string;
+  imageUrl?: string;
+  productUrl?: string;
+}
+
+async function getSettings(): Promise<ExtensionSettings> {
+  try {
+    const result = await chrome.storage.local.get(STORAGE_KEYS.SETTINGS);
+    return result[STORAGE_KEYS.SETTINGS] || {
+      llmConfig: {
+        provider: 'chrome-ai',
+      },
+      autoScrapeEnabled: true,
+    };
+  } catch (error) {
+    console.error('Error getting settings:', error);
+    return {
+      llmConfig: {
+        provider: 'chrome-ai',
+      },
+      autoScrapeEnabled: true,
+    };
+  }
+}
 
 // Helper function to get text content safely
 function getTextContent(element: Element | null): string {
@@ -20,7 +60,7 @@ async function scrapeProductInfo(contextData: any): Promise<ProductScrapingResul
 
   try {
     // Get settings to check LLM configuration
-    const settings = await StorageManager.getSettings();
+    const settings = await getSettings();
     
     if (settings.llmConfig.provider === 'chrome-ai' && 'ai' in window) {
       // Try using Chrome's built-in AI

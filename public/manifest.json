@@ -8,8 +8,7 @@
     "contextMenus",
     "activeTab",
     "sidePanel",
-    "notifications",
-    "aiOriginTrial"
+    "notifications"
   ],
   "host_permissions": [
     "https://*/*",

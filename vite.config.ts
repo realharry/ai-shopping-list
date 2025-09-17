@@ -24,7 +24,14 @@ export default defineConfig({
           }
           return 'assets/[name]-[hash].js';
         },
-        chunkFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: (chunkInfo) => {
+          // Keep content script chunks inline to avoid module loading issues
+          const facadeModuleId = chunkInfo.facadeModuleId || '';
+          if (facadeModuleId.includes('content')) {
+            return 'content-chunks-[hash].js';
+          }
+          return 'assets/[name]-[hash].js';
+        },
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
@@ -36,4 +43,6 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  // Ensure assets use relative paths for Chrome extension
+  base: './',
 })
