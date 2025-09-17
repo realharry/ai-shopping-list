@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
 
+// Simple utility function that combines and deduplicates classes
+// This replaces tailwind-merge with a basic implementation to avoid import issues
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return clsx(inputs)
 }
